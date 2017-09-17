@@ -1,3 +1,4 @@
+import logging
 import sys
 
 FILE = "cli-count.txt"
@@ -48,9 +49,11 @@ def create_file_if_missing():
     try:
         file = open(FILE, 'r')
     except IOError:
+        logging.warning("Missing %s file." % FILE)
         file = open(FILE, 'w')
+        logging.info("Created %s file used to store everything." % FILE)
+
     file.close()
-    print "File created."
 
 
 def do_operations(action=None, tag_name=None, value=None):
@@ -73,6 +76,13 @@ def do_operations(action=None, tag_name=None, value=None):
         print status
 
 
+def init():
+    """ Initialize first.
+    """
+    logging.getLogger().setLevel(logging.INFO)
+    create_file_if_missing()
+
+
 if __name__ == "__main__":
     """ Check for ACTION, TAG_NAME and VALUE as params
         then do related operations
@@ -90,5 +100,5 @@ if __name__ == "__main__":
     except Exception:
         value = None
 
-    create_file_if_missing()
+    init()
     do_operations(action=action, tag_name=tag_name, value=value)
