@@ -4,6 +4,7 @@ import sys
 
 FILE = "cli-count.txt"
 UNIT = 1
+log = logging.getLogger('cli-count')
 
 
 def help():
@@ -26,7 +27,7 @@ def now():
 def new(action=None, tag_name=None, start_value=None):
     """ Create new tag and assign a start value
     """
-    logging.info("Tag %s created." % tag_name)
+    log.info("Tag %s created." % tag_name)
 
 
 def add(action=None, tag_name=None, value=None):
@@ -35,31 +36,31 @@ def add(action=None, tag_name=None, value=None):
     if value is None:
         value = UNIT
     if tag_name is None:
-        logging.error("Missing tag name.")
+        log.error("Missing tag name.")
         return
 
     # [TODO] Check if tag exist or it must be created.
 
-    line = now() + " " + tag_name + " " + str(value)
+    line = now() + " " + tag_name + " " + str(value) + "\n"
     with open(FILE, "a") as f:
         f.write(line)
-    logging.info("Added %s." % line)
+    log.info("Added %s" % line)
 
 
 def total(action=None, tag_name=None, start_date=None):
     """ Show total value for a given tag
     """
-    logging.info("The total is...")
+    log.info("The total is...")
 
 
 def list(action=None, tag_name=None, start_date=None):
     """ List records for a given tag (optional: starting from a given date)
     """
-    logging.info("Listing records...")
+    log.info("Listing records...")
     if tag_name is not None:
-        logging.warning("[TODO] Implement tag filter.")
+        log.warning("[TODO] Implement tag filter.")
     if start_date is not None:
-        logging.warning("[TODO] Implement date filter.")
+        log.warning("[TODO] Implement date filter.")
     with open(FILE, 'r') as f:
         lines = f.read().splitlines()
         for line in lines:
@@ -72,9 +73,9 @@ def create_file_if_missing():
     try:
         f = open(FILE, 'r')
     except IOError:
-        logging.warning("Missing %s file." % FILE)
+        log.warning("Missing %s file." % FILE)
         f = open(FILE, 'w')
-        logging.info("Created %s file used to store everything." % FILE)
+        log.info("Created %s file used to store everything." % FILE)
 
     f.close()
 
@@ -94,10 +95,21 @@ def do_operations(action=None, tag_name=None, value=None):
         help()
 
 
+def set_log():
+    """ Settings related to logging
+    """
+    log.setLevel(logging.INFO)
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.INFO)
+    formatter = logging.Formatter('%(levelname)s - %(message)s')
+    ch.setFormatter(formatter)
+    log.addHandler(ch)
+
+
 def init():
     """ Initialize first.
     """
-    logging.getLogger().setLevel(logging.INFO)
+    set_log()
     create_file_if_missing()
 
 
