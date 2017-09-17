@@ -5,6 +5,10 @@ import sys
 FILE = "cli-count.txt"
 UNIT = 1
 log = logging.getLogger('cli-count')
+ACTION_NEW = "new"
+ACTION_ADD = "add"
+ACTION_TOTAL = "total"
+ACTION_LIST = "list"
 
 
 def help():
@@ -18,6 +22,13 @@ def help():
     """
 
 
+def write(line):
+    """ Append given line to FILE
+    """
+    with open(FILE, "a") as f:
+        f.write(line)
+
+
 def now():
     """ Return formatted now time. Example: Sun/17.09.2017/09:00:22
     """
@@ -27,7 +38,14 @@ def now():
 def new(action=None, tag_name=None, start_value=None):
     """ Create new tag and assign a start value
     """
-    log.info("Tag %s created." % tag_name)
+    if tag_name is None:
+        log.error("Missing tag name")
+        return
+    if start_value is None:
+        start_value = 0
+    line = '{} {} {} {} \n'.format(
+        now(), ACTION_NEW, tag_name, str(start_value))
+    log.info('{} {}'.format(ACTION_NEW, line))
 
 
 def add(action=None, tag_name=None, value=None):
@@ -41,10 +59,9 @@ def add(action=None, tag_name=None, value=None):
 
     # [TODO] Check if tag exist or it must be created.
 
-    line = now() + " " + tag_name + " " + str(value) + "\n"
-    with open(FILE, "a") as f:
-        f.write(line)
-    log.info("Added %s" % line)
+    line = '{} {} {} {} \n'.format(now(), ACTION_ADD, tag_name, str(value))
+    write(line)
+    log.info('{} {}'.format(ACTION_ADD, line))
 
 
 def total(action=None, tag_name=None, start_date=None):
@@ -73,9 +90,9 @@ def create_file_if_missing():
     try:
         f = open(FILE, 'r')
     except IOError:
-        log.warning("Missing %s file." % FILE)
+        log.warning("Missing {} file.".format(FILE))
         f = open(FILE, 'w')
-        log.info("Created %s file used to store everything." % FILE)
+        log.info("Created {} file used to store everything.".format(FILE))
 
     f.close()
 
