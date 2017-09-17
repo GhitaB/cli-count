@@ -7,13 +7,14 @@ FILE = "cli-count.txt"
 DEFAULT_UNIT = 1
 DEFAULT_START_VALUE_NEW = 0
 DEFAULT_TOTAL = 0
-DEFAULT_DATE = '01.01.2017'
+DEFAULT_DATE = datetime.now().strftime("%d.%m.%Y")
 log = logging.getLogger('cli-count')
 ACTION_NEW = "new"
 ACTION_ADD = "add"
 ACTION_TOTAL = "total"
 ACTION_LIST = "list"
 OPTION_ALL = "all"
+OPTION_TODAY = "today"
 SEPARATOR = "@@"
 
 
@@ -21,12 +22,12 @@ def help():
     """ Quick help
     """
     print """
-    cli-count new tag_name (start_value)        :: default start_value is 0
-    cli-count add tag_name (value) ("a story")  :: default value is 1
-    cli-count total tag_name (start_date)       :: date format: dd.mm.yyyy
-    cli-count list (tag_name) (start_date)      :: date format: dd.mm.yyyy
-    cli-count tags (all)                        :: show tags (with all info)
-    cli-count rename tag_name new_tag_name      :: rename given tag
+cli-count new tag_name (start_value)       > default start_value is 0
+cli-count add tag_name (value) ("a story") > default value is 1
+cli-count total tag_name (start_date)      > date format: dd.mm.yyyy or today
+cli-count list (tag_name) (start_date)     > date format: dd.mm.yyyy or today
+cli-count tags (all)                       > show tags (with all info)
+cli-count rename tag_name new_tag_name     > rename given tag
     """
 
 
@@ -131,7 +132,10 @@ def total(tag_name=None, start_date=None):
         return
 
     if start_date is not None:
-        start_date = get_date(start_date)
+        if start_date == OPTION_TODAY:
+            start_date = get_date(DEFAULT_DATE)
+        else:
+            start_date = get_date(start_date)
 
     total = DEFAULT_TOTAL
 
@@ -162,7 +166,10 @@ def list(tag_name=None, start_date=None):
             return
 
         if start_date is not None:
-            start_date = get_date(start_date)
+            if start_date == OPTION_TODAY:
+                start_date = get_date(DEFAULT_DATE)
+            else:
+                start_date = get_date(start_date)
 
             with open(FILE, 'r') as f:
                 lines = f.read().splitlines()
