@@ -227,9 +227,21 @@ def rename(tag_name=None, new_tag_name=None):
         log.error("Missing tag name.")
         return
 
+    tags = get_tags()
+
+    if tag_name not in tags:
+        log.error("Unknown tag.")
+        return
+
     if new_tag_name is None:
         log.error("Missing new tag name.")
         return
+    else:
+        if new_tag_name in tags:
+            log.warning("New tag is an existing one. Manual action needed. "
+                        "Open the file and make sure you have a single 'new' "
+                        "action for this tag. Maybe ok: rename second one "
+                        "to 'add'. Make sure the total value is ok.")
 
     with open(FILE, 'r+') as f:
         lines = f.read().splitlines()
@@ -318,10 +330,3 @@ if __name__ == "__main__":
 
     init()
     do_operations(val1=val1, val2=val2, val3=val3, val4=val4)
-
-"""
-[TODO]
-Validate tag names.
-
-Merge: Renaming a tag to an existing one: remove duplicate new action.
-"""
