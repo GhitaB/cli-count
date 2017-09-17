@@ -42,6 +42,17 @@ def list(action=None, tag_name=None, value=None):
     return status
 
 
+def create_file_if_missing():
+    """ All records are added in this file. Make sure it exists.
+    """
+    try:
+        file = open(FILE, 'r')
+    except IOError:
+        file = open(FILE, 'w')
+    file.close()
+    print "File created."
+
+
 def do_operations(action=None, tag_name=None, value=None):
     """ Redirect to complete an action
     """
@@ -79,4 +90,5 @@ if __name__ == "__main__":
     except Exception:
         value = None
 
+    create_file_if_missing()
     do_operations(action=action, tag_name=tag_name, value=value)
