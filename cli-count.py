@@ -143,14 +143,37 @@ def list(action=None, tag_name=None, start_date=None):
     """ List records for a given tag (optional: starting from a given date)
     """
     log.info("Listing records...")
+
     if tag_name is not None:
-        log.warning("[TODO] Implement tag filter.")
-    if start_date is not None:
-        log.warning("[TODO] Implement date filter.")
-    with open(FILE, 'r') as f:
-        lines = f.read().splitlines()
-        for line in lines:
-            print line
+        if tag_name not in get_tags():
+            log.error("Unknown tag name.")
+            return
+
+        if start_date is not None:
+            start_date = get_date(start_date)
+
+            with open(FILE, 'r') as f:
+                lines = f.read().splitlines()
+                for line in lines:
+                    parts = line.split(" ")
+                    if parts[2] == tag_name:
+                        if start_date is not None:
+                            if get_date(parts[0].split("/")[1]) >= start_date:
+                                print line
+
+        else:
+            with open(FILE, 'r') as f:
+                lines = f.read().splitlines()
+                for line in lines:
+                    parts = line.split(" ")
+                    if parts[2] == tag_name:
+                        print line
+
+    else:
+        with open(FILE, 'r') as f:
+            lines = f.read().splitlines()
+            for line in lines:
+                print line
 
 
 def get_tags():
