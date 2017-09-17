@@ -5,6 +5,7 @@ import sys
 FILE = "cli-count.txt"
 DEFAULT_UNIT = 1
 DEFAULT_START_VALUE_NEW = 0
+DEFAULT_TOTAL = 0
 log = logging.getLogger('cli-count')
 ACTION_NEW = "new"
 ACTION_ADD = "add"
@@ -75,10 +76,31 @@ def add(action=None, tag_name=None, value=None):
     log.info('{} {}'.format(ACTION_ADD, line))
 
 
-def total(action=None, tag_name=None, start_date=None):
+def total(tag_name=None, start_date=None):
     """ Show total value for a given tag
     """
-    log.info("The total is...")
+    if tag_name is None:
+        log.error("Missing tag name.")
+        return
+
+    if tag_name not in get_tags():
+        log.error("Unknown tag name.")
+        return
+
+    if start_date is not None:
+        log.warning("[TODO] Implement date filter.")
+
+    total = DEFAULT_TOTAL
+
+    with open(FILE, 'r') as f:
+        lines = f.read().splitlines()
+        for line in lines:
+            parts = line.split(" ")
+            if parts[2] == tag_name:
+                total += float(parts[3])
+                print line
+
+    log.info("TOTAL: {}".format(total))
 
 
 def list(action=None, tag_name=None, start_date=None):
@@ -148,7 +170,7 @@ def do_operations(val1=None, val2=None, val3=None):
     elif val1 == "add":
         add(action=val1, tag_name=val2, value=val3)
     elif val1 == "total":
-        total(action=val1, tag_name=val2, start_date=val3)
+        total(tag_name=val2, start_date=val3)
     elif val1 == "list":
         list(action=val1, tag_name=val2, start_date=val3)
     elif val1 == "tags":
