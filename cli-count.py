@@ -3,7 +3,8 @@ import logging
 import sys
 
 FILE = "cli-count.txt"
-UNIT = 1
+DEFAULT_UNIT = 1
+DEFAULT_START_VALUE_NEW = 0
 log = logging.getLogger('cli-count')
 ACTION_NEW = "new"
 ACTION_ADD = "add"
@@ -13,14 +14,16 @@ OPTION_ALL = "all"
 
 
 def help():
+    """ Quick help
+    """
     print """
-    cli-count ACTION TAG_NAME VALUE             :: general format
     cli-count new tag_name (start_value)        :: default start_value is 0
     cli-count add tag_name (value)              :: default value is 1
     cli-count total tag_name (start_date)       :: date format: dd.mm.year
     cli-count list (tag_name) (start_date)      :: date format: dd.mm.year
     cli-count tags (all)                        :: show tags (with all info)
-    cli-count help                              :: examples on github
+    cli-count help                              :: examples on github [TODO]
+    cli-count rename tag_name                   :: [TODO]
     """
 
 
@@ -43,8 +46,10 @@ def new(action=None, tag_name=None, start_value=None):
     if tag_name is None:
         log.error("Missing tag name")
         return
+
     if start_value is None:
-        start_value = 0
+        start_value = DEFAULT_START_VALUE_NEW
+
     line = '{} {} {} {} \n'.format(
         now(), ACTION_NEW, tag_name, str(start_value))
     write(line)
@@ -55,12 +60,15 @@ def add(action=None, tag_name=None, value=None):
     """ Add value for given tag
     """
     if value is None:
-        value = UNIT
+        value = DEFAULT_UNIT
+
     if tag_name is None:
         log.error("Missing tag name.")
         return
 
-    # [TODO] Check if tag exist or it must be created.
+    if tag_name not in get_tags():
+        log.error("Unknown tag. Please create it before using.")
+        return
 
     line = '{} {} {} {} \n'.format(now(), ACTION_ADD, tag_name, str(value))
     write(line)
@@ -87,8 +95,22 @@ def list(action=None, tag_name=None, start_date=None):
             print line
 
 
+def get_tags():
+    """ Return the list of tags
+    """
+    tags = []
+
+    with open(FILE, 'r') as f:
+        lines = f.read().splitlines()
+        for line in lines:
+            parts = line.split(" ")
+            if parts[1] == ACTION_NEW:
+                tags.append(parts[2])
+    return tags
+
+
 def tags(option=None):
-    """ Show existing tag names. If show_all is True: show all details
+    """ Show existing tag names.  option: all, for all info
     """
     log.info("Listing tags...")
     tags = []
