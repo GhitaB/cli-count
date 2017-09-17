@@ -1,4 +1,5 @@
 from datetime import datetime
+from datetime import date
 import logging
 import sys
 
@@ -6,12 +7,14 @@ FILE = "cli-count.txt"
 DEFAULT_UNIT = 1
 DEFAULT_START_VALUE_NEW = 0
 DEFAULT_TOTAL = 0
+DEFAULT_DATE = '01.01.2017'
 log = logging.getLogger('cli-count')
 ACTION_NEW = "new"
 ACTION_ADD = "add"
 ACTION_TOTAL = "total"
 ACTION_LIST = "list"
 OPTION_ALL = "all"
+SEPARATOR = "@@"
 
 
 def help():
@@ -19,9 +22,9 @@ def help():
     """
     print """
     cli-count new tag_name (start_value)        :: default start_value is 0
-    cli-count add tag_name (value)              :: default value is 1
-    cli-count total tag_name (start_date)       :: date format: dd.mm.year
-    cli-count list (tag_name) (start_date)      :: date format: dd.mm.year
+    cli-count add tag_name (value) ("a story")  :: default value is 1
+    cli-count total tag_name (start_date)       :: date format: dd.mm.yyyy
+    cli-count list (tag_name) (start_date)      :: date format: dd.mm.yyyy
     cli-count tags (all)                        :: show tags (with all info)
     cli-count help                              :: examples on github [TODO]
     cli-count rename tag_name                   :: [TODO]
@@ -41,11 +44,33 @@ def now():
     return datetime.now().strftime("%a/%d.%m.%Y/%H:%M:%S")
 
 
+def get_date(ddmmyyyy=None):
+    """ Return date object
+    """
+    if ddmmyyyy is None:
+        log.error("Missing date. {} will be used.".format(DEFAULT_DATE))
+        ddmmyyyy = DEFAULT_DATE
+
+    parts = ddmmyyyy.split(".")
+    try:
+        res = date(int(parts[2]), int(parts[1]), int(parts[0]))
+    except Exception:
+        log.error("Wrong date. {} will be used.".format(DEFAULT_DATE))
+        parts = DEFAULT_DATE.split(".")
+        res = date(int(parts[2]), int(parts[1]), int(parts[0]))
+
+    return res
+
+
 def new(action=None, tag_name=None, start_value=None):
     """ Create new tag and assign a start value
     """
     if tag_name is None:
         log.error("Missing tag name")
+        return
+
+    if tag_name in get_tags():
+        log.error("Abort. Tag name already exists.")
         return
 
     if start_value is None:
@@ -57,7 +82,7 @@ def new(action=None, tag_name=None, start_value=None):
     log.info('{} {}'.format(ACTION_NEW, line))
 
 
-def add(action=None, tag_name=None, value=None):
+def add(tag_name=None, value=None, story=None):
     """ Add value for given tag
     """
     if value is None:
@@ -71,7 +96,13 @@ def add(action=None, tag_name=None, value=None):
         log.error("Unknown tag. Please create it before using.")
         return
 
-    line = '{} {} {} {} \n'.format(now(), ACTION_ADD, tag_name, str(value))
+    if story is None:
+        story = SEPARATOR
+    else:
+        story = "{}{}".format(SEPARATOR, story)
+
+    line = '{} {} {} {} {} \n'.format(
+        now(), ACTION_ADD, tag_name, str(value), story)
     write(line)
     log.info('{} {}'.format(ACTION_ADD, line))
 
@@ -89,6 +120,7 @@ def total(tag_name=None, start_date=None):
 
     if start_date is not None:
         log.warning("[TODO] Implement date filter.")
+        print get_date(start_date)
 
     total = DEFAULT_TOTAL
 
@@ -162,13 +194,13 @@ def create_file_if_missing():
     f.close()
 
 
-def do_operations(val1=None, val2=None, val3=None):
+def do_operations(val1=None, val2=None, val3=None, val4=None):
     """ Redirect to complete an action
     """
     if val1 == "new":
         new(action=val1, tag_name=val2, start_value=val3)
     elif val1 == "add":
-        add(action=val1, tag_name=val2, value=val3)
+        add(tag_name=val2, value=val3, story=val4)
     elif val1 == "total":
         total(tag_name=val2, start_date=val3)
     elif val1 == "list":
@@ -213,6 +245,16 @@ if __name__ == "__main__":
         val3 = sys.argv[3]
     except Exception:
         val3 = None
+    try:
+        val4 = sys.argv[4]
+    except Exception:
+        val4 = None
 
     init()
-    do_operations(val1=val1, val2=val2, val3=val3)
+    do_operations(val1=val1, val2=val2, val3=val3, val4=val4)
+
+"""
+[TODO]
+Validate numbers.
+Validate tag names.
+"""
