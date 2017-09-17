@@ -75,6 +75,13 @@ def new(tag_name=None, start_value=None):
     if start_value is None:
         start_value = DEFAULT_START_VALUE_NEW
 
+    else:
+        try:
+            start_value = float(start_value)
+        except Exception:
+            log.error("Invalid value.")
+            return
+
     line = '{} {} {} {} \n'.format(
         now(), ACTION_NEW, tag_name, str(start_value))
     write(line)
@@ -93,6 +100,12 @@ def add(tag_name=None, value=None, story=None):
 
     if tag_name not in get_tags():
         log.error("Unknown tag. Please create it before using.")
+        return
+
+    try:
+        value = float(value)
+    except Exception:
+        log.error("Invalid value.")
         return
 
     if story is None:
@@ -308,6 +321,7 @@ if __name__ == "__main__":
 
 """
 [TODO]
-Validate numbers.
 Validate tag names.
+
+Merge: Renaming a tag to an existing one: remove duplicate new action.
 """
