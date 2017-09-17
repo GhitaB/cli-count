@@ -119,8 +119,7 @@ def total(tag_name=None, start_date=None):
         return
 
     if start_date is not None:
-        log.warning("[TODO] Implement date filter.")
-        print get_date(start_date)
+        start_date = get_date(start_date)
 
     total = DEFAULT_TOTAL
 
@@ -129,8 +128,13 @@ def total(tag_name=None, start_date=None):
         for line in lines:
             parts = line.split(" ")
             if parts[2] == tag_name:
-                total += float(parts[3])
-                print line
+                if start_date is not None:
+                    if get_date(parts[0].split("/")[1]) >= start_date:
+                        print line
+                        total += float(parts[3])
+                else:
+                    print line
+                    total += float(parts[3])
 
     log.info("TOTAL: {}".format(total))
 
