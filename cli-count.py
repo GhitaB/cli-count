@@ -26,8 +26,7 @@ def help():
     cli-count total tag_name (start_date)       :: date format: dd.mm.yyyy
     cli-count list (tag_name) (start_date)      :: date format: dd.mm.yyyy
     cli-count tags (all)                        :: show tags (with all info)
-    cli-count help                              :: examples on github [TODO]
-    cli-count rename tag_name                   :: [TODO]
+    cli-count rename tag_name new_tag_name      :: rename given tag
     """
 
 
@@ -62,7 +61,7 @@ def get_date(ddmmyyyy=None):
     return res
 
 
-def new(action=None, tag_name=None, start_value=None):
+def new(tag_name=None, start_value=None):
     """ Create new tag and assign a start value
     """
     if tag_name is None:
@@ -139,7 +138,7 @@ def total(tag_name=None, start_date=None):
     log.info("TOTAL: {}".format(total))
 
 
-def list(action=None, tag_name=None, start_date=None):
+def list(tag_name=None, start_date=None):
     """ List records for a given tag (optional: starting from a given date)
     """
     log.info("Listing records...")
@@ -208,6 +207,31 @@ def tags(option=None):
     print tags
 
 
+def rename(tag_name=None, new_tag_name=None):
+    """ Replace tag_name with new_tag_name
+    """
+    if tag_name is None:
+        log.error("Missing tag name.")
+        return
+
+    if new_tag_name is None:
+        log.error("Missing new tag name.")
+        return
+
+    with open(FILE, 'r+') as f:
+        lines = f.read().splitlines()
+        new_lines = []
+        for line in lines:
+            new_line = line
+            if tag_name in line:
+                new_line = line.replace(tag_name, new_tag_name)
+                log.info("Renamed: {}".format(new_line))
+            new_lines.append(new_line)
+
+    with open(FILE, 'w') as f:
+        f.write("\n".join(new_lines))
+
+
 def create_file_if_missing():
     """ All records are added in this file. Make sure it exists.
     """
@@ -225,15 +249,17 @@ def do_operations(val1=None, val2=None, val3=None, val4=None):
     """ Redirect to complete an action
     """
     if val1 == "new":
-        new(action=val1, tag_name=val2, start_value=val3)
+        new(tag_name=val2, start_value=val3)
     elif val1 == "add":
         add(tag_name=val2, value=val3, story=val4)
     elif val1 == "total":
         total(tag_name=val2, start_date=val3)
     elif val1 == "list":
-        list(action=val1, tag_name=val2, start_date=val3)
+        list(tag_name=val2, start_date=val3)
     elif val1 == "tags":
         tags(option=val2)
+    elif val1 == "rename":
+        rename(tag_name=val2, new_tag_name=val3)
     else:
         help()
 
