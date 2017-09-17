@@ -37,19 +37,27 @@ def list(action=None, tag_name=None, start_date=None):
     """ List records for a given tag (optional: starting from a given date)
     """
     logging.info("Listing records...")
+    if tag_name is not None:
+        logging.warning("[TODO] Implement tag filter.")
+    if start_date is not None:
+        logging.warning("[TODO] Implement date filter.")
+    with open(FILE, 'r') as f:
+        lines = f.read().splitlines()
+        for line in lines:
+            print line
 
 
 def create_file_if_missing():
     """ All records are added in this file. Make sure it exists.
     """
     try:
-        file = open(FILE, 'r')
+        f = open(FILE, 'r')
     except IOError:
         logging.warning("Missing %s file." % FILE)
-        file = open(FILE, 'w')
+        f = open(FILE, 'w')
         logging.info("Created %s file used to store everything." % FILE)
 
-    file.close()
+    f.close()
 
 
 def do_operations(action=None, tag_name=None, value=None):
