@@ -15,32 +15,28 @@ def help():
     """
 
 
-def new(action=None, tag_name=None, value=None):
+def new(action=None, tag_name=None, start_value=None):
     """ Create new tag and assign a start value
     """
-    status = "New tag created."
-    return status
+    logging.info("Tag %s created." % tag_name)
 
 
 def add(action=None, tag_name=None, value=None):
     """ Add value for given tag
     """
-    status = "Tag value added."
-    return status
+    logging.info("Tag value added.")
 
 
-def total(action=None, tag_name=None, value=None):
+def total(action=None, tag_name=None, start_date=None):
     """ Show total value for a given tag
     """
-    status = "The total is..."
-    return status
+    logging.info("The total is...")
 
 
-def list(action=None, tag_name=None, value=None):
+def list(action=None, tag_name=None, start_date=None):
     """ List records for a given tag (optional: starting from a given date)
     """
-    status = "Listing records..."
-    return status
+    logging.info("Listing records...")
 
 
 def create_file_if_missing():
@@ -60,20 +56,15 @@ def do_operations(action=None, tag_name=None, value=None):
     """ Redirect to complete an action
     """
     if action == "new":
-        status = new(action=action, tag_name=tag_name, value=value)
-        print status
+        new(action=action, tag_name=tag_name, start_value=value)
     elif action == "add":
-        status = add(action=action, tag_name=tag_name, value=value)
-        print status
+        add(action=action, tag_name=tag_name, value=value)
     elif action == "total":
-        status = total(action=action, tag_name=tag_name, value=value)
-        print status
+        total(action=action, tag_name=tag_name, start_date=value)
     elif action == "list":
-        status = list(action=action, tag_name=tag_name, value=value)
-        print status
+        list(action=action, tag_name=tag_name, start_date=value)
     else:
-        status = help()
-        print status
+        help()
 
 
 def init():
