@@ -1,7 +1,9 @@
+from datetime import datetime
 import logging
 import sys
 
 FILE = "cli-count.txt"
+UNIT = 1
 
 
 def help():
@@ -15,6 +17,12 @@ def help():
     """
 
 
+def now():
+    """ Return formatted now time. Example: Sun/17.09.2017/09:00:22
+    """
+    return datetime.now().strftime("%a/%d.%m.%Y/%H:%M:%S")
+
+
 def new(action=None, tag_name=None, start_value=None):
     """ Create new tag and assign a start value
     """
@@ -24,7 +32,18 @@ def new(action=None, tag_name=None, start_value=None):
 def add(action=None, tag_name=None, value=None):
     """ Add value for given tag
     """
-    logging.info("Tag value added.")
+    if value is None:
+        value = UNIT
+    if tag_name is None:
+        logging.error("Missing tag name.")
+        return
+
+    # [TODO] Check if tag exist or it must be created.
+
+    line = now() + " " + tag_name + " " + str(value)
+    with open(FILE, "a") as f:
+        f.write(line)
+    logging.info("Added %s." % line)
 
 
 def total(action=None, tag_name=None, start_date=None):
