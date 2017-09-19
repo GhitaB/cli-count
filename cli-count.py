@@ -255,8 +255,10 @@ def rename(tag_name=None, new_tag_name=None):
         new_lines = []
         for line in lines:
             new_line = line
-            if tag_name in line:
-                new_line = line.replace(tag_name, new_tag_name)
+            parts = line.split(" ")
+            if parts[2] == tag_name:
+                parts[2] = new_tag_name
+                new_line = " ".join(parts)
                 log.info("Renamed: {}".format(new_line))
             new_lines.append(new_line)
 
