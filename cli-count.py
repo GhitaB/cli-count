@@ -16,6 +16,7 @@ ACTION_LIST = "list"
 OPTION_ALL = "all"
 OPTION_TODAY = "today"
 SEPARATOR = "@@"
+RESERVED_WORDS = ['today', 'all']
 
 
 def help():
@@ -29,6 +30,16 @@ cli-count list (tag_name) (start_date)     > date format: dd.mm.yyyy or today
 cli-count tags (all)                       > show tags (with all info)
 cli-count rename tag_name new_tag_name     > rename given tag
     """
+
+
+def is_valid(tag_name):
+    """ Validate a tag name
+    """
+    if " " in tag_name:
+        return False
+    if tag_name in RESERVED_WORDS:
+        return False
+    return True
 
 
 def write(line):
@@ -71,6 +82,11 @@ def new(tag_name=None, start_value=None):
 
     if tag_name in get_tags():
         log.error("Abort. Tag name already exists.")
+        return
+
+    if not is_valid(tag_name):
+        log.error("Invalid tag name. Don't use spaces or reserved words ("
+                  "{}).".format(", ".join(RESERVED_WORDS)))
         return
 
     if start_value is None:
@@ -244,6 +260,11 @@ def rename(tag_name=None, new_tag_name=None):
         log.error("Missing new tag name.")
         return
     else:
+        if not is_valid(new_tag_name):
+            log.error("Invalid tag name. Don't use spaces or reserved words ("
+                      "{}).".format(", ".join(RESERVED_WORDS)))
+            return
+
         if new_tag_name in tags:
             log.warning("New tag is an existing one. Manual action needed. "
                         "Open the file and make sure you have a single 'new' "
