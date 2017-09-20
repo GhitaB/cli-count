@@ -18,6 +18,21 @@ OPTION_TODAY = "today"
 SEPARATOR = "@@"
 RESERVED_WORDS = ['today', 'all']
 
+ERROR_MISSING_DATE_USE_DEFAULT = "Missing date. {} will be used.".format(
+    DEFAULT_DATE)
+ERROR_WRONG_DATE_USE_DEFAULT = "Wrong date. {} will be used.".format(
+    DEFAULT_DATE)
+ERROR_MISSING_TAG_NAME = "Missing tag name."
+ERROR_EXISTING_TAG_NAME = "Tag name already exists."
+ERROR_WRONG_TAG_NAME = "Invalid tag name. Don't use spaces or reserved words ("
+"{}).".format(", ".join(RESERVED_WORDS))
+ERROR_WRONG_VALUE = "Wrong value."
+ERROR_UNKNOWN_TAG_NAME = "Unknown tag name."
+WARNING_RENAME_WITH_EXISTING_TAG_NAME = """ New tag is an existing one. Manual
+action needed. Open the file and make sure you have a single 'new' action for
+this tag. Maybe ok: rename second one to 'add'. Make sure the total value
+is correct."""
+
 
 def help():
     """ Quick help
@@ -59,14 +74,14 @@ def get_date(ddmmyyyy=None):
     """ Return date object
     """
     if ddmmyyyy is None:
-        log.error("Missing date. {} will be used.".format(DEFAULT_DATE))
+        log.error(ERROR_MISSING_DATE_USE_DEFAULT)
         ddmmyyyy = DEFAULT_DATE
 
     parts = ddmmyyyy.split(".")
     try:
         res = date(int(parts[2]), int(parts[1]), int(parts[0]))
     except Exception:
-        log.error("Wrong date. {} will be used.".format(DEFAULT_DATE))
+        log.error(ERROR_WRONG_DATE_USE_DEFAULT)
         parts = DEFAULT_DATE.split(".")
         res = date(int(parts[2]), int(parts[1]), int(parts[0]))
 
@@ -77,16 +92,15 @@ def new(tag_name=None, start_value=None):
     """ Create new tag and assign a start value
     """
     if tag_name is None:
-        log.error("Missing tag name")
+        log.error(ERROR_MISSING_TAG_NAME)
         return
 
     if tag_name in get_tags():
-        log.error("Abort. Tag name already exists.")
+        log.error(ERROR_EXISTING_TAG_NAME)
         return
 
     if not is_valid(tag_name):
-        log.error("Invalid tag name. Don't use spaces or reserved words ("
-                  "{}).".format(", ".join(RESERVED_WORDS)))
+        log.error(ERROR_WRONG_TAG_NAME)
         return
 
     if start_value is None:
@@ -96,7 +110,7 @@ def new(tag_name=None, start_value=None):
         try:
             start_value = float(start_value)
         except Exception:
-            log.error("Invalid value.")
+            log.error(ERROR_WRONG_VALUE)
             return
 
     line = '{} {} {} {} \n'.format(
@@ -112,17 +126,17 @@ def add(tag_name=None, value=None, story=None):
         value = DEFAULT_UNIT
 
     if tag_name is None:
-        log.error("Missing tag name.")
+        log.error(ERROR_MISSING_TAG_NAME)
         return
 
     if tag_name not in get_tags():
-        log.error("Unknown tag. Please create it before using.")
+        log.error(ERROR_UNKNOWN_TAG_NAME)
         return
 
     try:
         value = float(value)
     except Exception:
-        log.error("Invalid value.")
+        log.error(ERROR_WRONG_VALUE)
         return
 
     if story is None:
@@ -140,11 +154,11 @@ def total(tag_name=None, start_date=None):
     """ Show total value for a given tag
     """
     if tag_name is None:
-        log.error("Missing tag name.")
+        log.error(ERROR_MISSING_TAG_NAME)
         return
 
     if tag_name not in get_tags():
-        log.error("Unknown tag name.")
+        log.error(ERROR_UNKNOWN_TAG_NAME)
         return
 
     if start_date is not None:
@@ -174,11 +188,9 @@ def total(tag_name=None, start_date=None):
 def list(tag_name=None, start_date=None):
     """ List records for a given tag (optional: starting from a given date)
     """
-    log.info("Listing records...")
-
     if tag_name is not None:
         if tag_name not in get_tags():
-            log.error("Unknown tag name.")
+            log.error(ERROR_UNKNOWN_TAG_NAME)
             return
 
         if start_date is not None:
@@ -228,7 +240,6 @@ def get_tags():
 def tags(option=None):
     """ Show existing tag names.  option: all, for all info
     """
-    log.info("Listing tags...")
     tags = []
     show_all = True if option == OPTION_ALL else False
 
@@ -247,29 +258,25 @@ def rename(tag_name=None, new_tag_name=None):
     """ Replace tag_name with new_tag_name
     """
     if tag_name is None:
-        log.error("Missing tag name.")
+        log.error(ERROR_MISSING_TAG_NAME)
         return
 
     tags = get_tags()
 
     if tag_name not in tags:
-        log.error("Unknown tag.")
+        log.error(ERROR_UNKNOWN_TAG_NAME)
         return
 
     if new_tag_name is None:
-        log.error("Missing new tag name.")
+        log.error(ERROR_MISSING_TAG_NAME)
         return
     else:
         if not is_valid(new_tag_name):
-            log.error("Invalid tag name. Don't use spaces or reserved words ("
-                      "{}).".format(", ".join(RESERVED_WORDS)))
+            log.error(ERROR_WRONG_TAG_NAME)
             return
 
         if new_tag_name in tags:
-            log.warning("New tag is an existing one. Manual action needed. "
-                        "Open the file and make sure you have a single 'new' "
-                        "action for this tag. Maybe ok: rename second one "
-                        "to 'add'. Make sure the total value is ok.")
+            log.warning(WARNING_RENAME_WITH_EXISTING_TAG_NAME)
 
     with open(FILE, 'r+') as f:
         lines = f.read().splitlines()
@@ -293,9 +300,7 @@ def create_file_if_missing():
     try:
         f = open(FILE, 'r')
     except IOError:
-        log.warning("Missing {} file.".format(FILE))
         f = open(FILE, 'w')
-        log.info("Created {} file used to store everything.".format(FILE))
 
     f.close()
 
