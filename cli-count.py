@@ -181,18 +181,22 @@ def nice(line):
 
         Input: Tue/19.09.2017/19:46:46 new tag_name 1.5
         Output: Tue/19.09.2017/19:46:46 1.5
+
+        If error: return original line
     """
     try:
-        parts = line.split("@@")
-        parts_a = parts[0].split(" ")
-        return " ".join([parts_a[0], parts_a[3], parts[1]])
-    except Exception:
-        try:
+        if "add" in line:
+            parts = line.split(SEPARATOR)
+            parts_a = parts[0].split(" ")
+            return " ".join([parts_a[0], parts_a[3], parts[1]])
+
+        elif "new" in line:
             parts = line.split("@@")
             parts_a = parts[0].split(" ")
             return " ".join([parts_a[0], parts_a[3]])
-        except Exception:
-            return line
+
+    except Exception:
+        return line
 
 
 def list(tag_name=None, start_date=None):
