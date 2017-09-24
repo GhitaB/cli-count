@@ -191,9 +191,8 @@ def nice(line):
             return " ".join([parts_a[0], parts_a[3], parts[1]])
 
         elif "new" in line:
-            parts = line.split("@@")
-            parts_a = parts[0].split(" ")
-            return " ".join([parts_a[0], parts_a[3]])
+            parts = line.split(" ")
+            return " ".join([parts[0], parts[3]])
 
     except Exception:
         return line
