@@ -32,6 +32,7 @@ cli-count new tag_name (start_value)       > default start_value is 0
 cli-count add tag_name (value) ("a story") > default value is 1
 cli-count total tag_name (start_date)      > date format: dd.mm.yyyy or today
 cli-count list (tag_name) (start_date)     > date format: dd.mm.yyyy or today
+cli-count edit old_line new_line           > use old_line as listed by list
 cli-count tags (all)                       > show tags (with all info)
 cli-count rename tag_name new_tag_name     > rename given tag
     """
@@ -267,6 +268,36 @@ def tags(option=None):
     print tags
 
 
+def edit(old_line=None, new_line=None):
+    """ Replace old line with new one
+    """
+    if (old_line is None) or (new_line is None):
+        log.error("Missing line.")  # [TODO] Add in config
+        return
+
+    no_updates = True
+    with open(FILE, 'r+') as f:
+        lines = f.read().splitlines()
+        new_lines = []
+        for line in lines:
+            updated_line = line
+            if old_line in line:
+                # [TODO] Is it unsafe or a feature (to work
+                # with parts of an old line)?
+                updated_line = new_line
+                no_updates = False
+                log.info("Replaced with: {}".format(new_line))
+            new_lines.append(updated_line)
+        new_lines.append("")  # [TODO] More tests. This is for the case
+        # we edit last line.
+
+    with open(FILE, 'w') as f:
+        f.write("\n".join(new_lines))
+
+    if(no_updates):
+        log.info("No edits.")  # [TODO] Add in config
+
+
 def rename(tag_name=None, new_tag_name=None):
     """ Replace tag_name with new_tag_name
     """
@@ -329,6 +360,8 @@ def do_operations(val1=None, val2=None, val3=None, val4=None):
         total(tag_name=val2, start_date=val3)
     elif val1 == "list":
         list(tag_name=val2, start_date=val3)
+    elif val1 == "edit":
+        edit(old_line=val2, new_line=val3)
     elif val1 == "tags":
         tags(option=val2)
     elif val1 == "rename":
