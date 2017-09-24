@@ -33,6 +33,7 @@ cli-count add tag_name (value) ("a story") > default value is 1
 cli-count total tag_name (start_date)      > date format: dd.mm.yyyy or today
 cli-count list (tag_name) (start_date)     > date format: dd.mm.yyyy or today
 cli-count edit old_line new_line           > use old_line as listed by list
+cli-count delete text (preview)            > use preview mode before delete
 cli-count tags (all)                       > show tags (with all info)
 cli-count rename tag_name new_tag_name     > rename given tag
     """
@@ -295,7 +296,38 @@ def edit(old_line=None, new_line=None):
         f.write("\n".join(new_lines))
 
     if(no_updates):
-        log.info("No edits.")  # [TODO] Add in config
+        log.info("No changes.")  # [TODO] Add in config
+
+
+def delete(text=None, preview=None):
+    """ Delete lines containing given text
+    """
+    if text is None:
+        log.error("Missing text.")  # [TODO] Add in config
+        return
+
+    OPTION_PREVIEW = "preview"
+
+    no_updates = True
+    with open(FILE, 'r+') as f:
+        lines = f.read().splitlines()
+        new_lines = []
+        for line in lines:
+            if text in line:
+                if preview == OPTION_PREVIEW:
+                    log.info("To be deleted: {}".format(line))
+                    new_lines.append(line)
+                else:
+                    log.info("Deleted: {}".format(line))
+                    no_updates = False
+            else:
+                new_lines.append(line)
+
+    with open(FILE, 'w') as f:
+        f.write("\n".join(new_lines))
+
+    if(no_updates):
+        log.info("No changes.")  # [TODO] Add in config
 
 
 def rename(tag_name=None, new_tag_name=None):
@@ -360,8 +392,10 @@ def do_operations(val1=None, val2=None, val3=None, val4=None):
         total(tag_name=val2, start_date=val3)
     elif val1 == "list":
         list(tag_name=val2, start_date=val3)
-    elif val1 == "edit":
+    elif val1 == "edit":  # [TODO] Update reserved words
         edit(old_line=val2, new_line=val3)
+    elif val1 == "delete":  # [TODO] Update reserved words
+        delete(text=val2, preview=val3)
     elif val1 == "tags":
         tags(option=val2)
     elif val1 == "rename":
