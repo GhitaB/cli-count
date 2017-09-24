@@ -175,6 +175,26 @@ def total(tag_name=None, start_date=None):
     log.info("TOTAL: {}".format(total))
 
 
+def nice(line):
+    """ Input: Tue/19.09.2017/19:46:46 add tag_name 1.5 @@Story here
+        Output: Tue/19.09.2017/19:46:46 1.5 Story here
+
+        Input: Tue/19.09.2017/19:46:46 new tag_name 1.5
+        Output: Tue/19.09.2017/19:46:46 1.5
+    """
+    try:
+        parts = line.split("@@")
+        parts_a = parts[0].split(" ")
+        return " ".join([parts_a[0], parts_a[3], parts[1]])
+    except Exception:
+        try:
+            parts = line.split("@@")
+            parts_a = parts[0].split(" ")
+            return " ".join([parts_a[0], parts_a[3]])
+        except Exception:
+            return line
+
+
 def list(tag_name=None, start_date=None):
     """ List records for a given tag (optional: starting from a given date)
     """
@@ -196,7 +216,7 @@ def list(tag_name=None, start_date=None):
                     if parts[2] == tag_name:
                         if start_date is not None:
                             if get_date(parts[0].split("/")[1]) >= start_date:
-                                print line
+                                print nice(line)
 
         else:
             with open(FILE, 'r') as f:
@@ -204,7 +224,7 @@ def list(tag_name=None, start_date=None):
                 for line in lines:
                     parts = line.split(" ")
                     if parts[2] == tag_name:
-                        print line
+                        print nice(line)
 
     else:
         with open(FILE, 'r') as f:
