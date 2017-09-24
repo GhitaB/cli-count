@@ -166,10 +166,10 @@ def total(tag_name=None, start_date=None):
             if parts[2] == tag_name:
                 if start_date is not None:
                     if get_date(parts[0].split("/")[1]) >= start_date:
-                        print line
+                        print nice(line)
                         total += float(parts[3])
                 else:
-                    print line
+                    print nice(line)
                     total += float(parts[3])
 
     log.info("TOTAL: {}".format(total))
