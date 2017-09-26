@@ -10,6 +10,7 @@ from cliconfig import DEFAULT_DATE
 from cliconfig import log
 from cliconfig import ACTION_NEW
 from cliconfig import ACTION_ADD
+from cliconfig import INFO_NO_CHANGES
 from cliconfig import OPTION_ALL
 from cliconfig import OPTION_TODAY
 from cliconfig import SEPARATOR
@@ -17,6 +18,8 @@ from cliconfig import RESERVED_WORDS
 from cliconfig import ERROR_MISSING_DATE_USE_DEFAULT
 from cliconfig import ERROR_WRONG_DATE_USE_DEFAULT
 from cliconfig import ERROR_MISSING_TAG_NAME
+from cliconfig import ERROR_MISSING_LINE
+from cliconfig import ERROR_MISSING_TEXT
 from cliconfig import ERROR_EXISTING_TAG_NAME
 from cliconfig import ERROR_WRONG_TAG_NAME
 from cliconfig import ERROR_WRONG_VALUE
@@ -273,7 +276,7 @@ def edit(old_line=None, new_line=None):
     """ Replace old line with new one
     """
     if (old_line is None) or (new_line is None):
-        log.error("Missing line.")  # [TODO] Add in config
+        log.error(ERROR_MISSING_LINE)
         return
 
     no_updates = True
@@ -283,27 +286,25 @@ def edit(old_line=None, new_line=None):
         for line in lines:
             updated_line = line
             if old_line in line:
-                # [TODO] Is it unsafe or a feature (to work
-                # with parts of an old line)?
+                # So, it's working with parts of an old line, too.
                 updated_line = new_line
                 no_updates = False
                 log.info("Replaced with: {}".format(new_line))
             new_lines.append(updated_line)
-        new_lines.append("")  # [TODO] More tests. This is for the case
-        # we edit last line.
+        new_lines.append("")
 
     with open(FILE, 'w') as f:
         f.write("\n".join(new_lines))
 
     if(no_updates):
-        log.info("No changes.")  # [TODO] Add in config
+        log.info(INFO_NO_CHANGES)
 
 
 def delete(text=None, preview=None):
     """ Delete lines containing given text
     """
     if text is None:
-        log.error("Missing text.")  # [TODO] Add in config
+        log.error(ERROR_MISSING_TEXT)
         return
 
     OPTION_PREVIEW = "preview"
@@ -327,7 +328,7 @@ def delete(text=None, preview=None):
         f.write("\n".join(new_lines))
 
     if(no_updates):
-        log.info("No changes.")  # [TODO] Add in config
+        log.info(INFO_NO_CHANGES)
 
 
 def rename(tag_name=None, new_tag_name=None):
@@ -392,9 +393,9 @@ def do_operations(val1=None, val2=None, val3=None, val4=None):
         total(tag_name=val2, start_date=val3)
     elif val1 == "list":
         list(tag_name=val2, start_date=val3)
-    elif val1 == "edit":  # [TODO] Update reserved words
+    elif val1 == "edit":
         edit(old_line=val2, new_line=val3)
-    elif val1 == "delete":  # [TODO] Update reserved words
+    elif val1 == "delete":
         delete(text=val2, preview=val3)
     elif val1 == "tags":
         tags(option=val2)

@@ -23,11 +23,14 @@ ERROR_MISSING_DATE_USE_DEFAULT = "Missing date. {} will be used.".format(
 ERROR_WRONG_DATE_USE_DEFAULT = "Wrong date. {} will be used.".format(
     DEFAULT_DATE)
 ERROR_MISSING_TAG_NAME = "Missing tag name."
+ERROR_MISSING_TEXT = "Missing text."
+ERROR_MISSING_LINE = "Missing line."
 ERROR_EXISTING_TAG_NAME = "Tag name already exists."
 ERROR_WRONG_TAG_NAME = "Invalid tag name. Don't use spaces or reserved words ("
 "{}).".format(", ".join(RESERVED_WORDS))
 ERROR_WRONG_VALUE = "Wrong value."
 ERROR_UNKNOWN_TAG_NAME = "Unknown tag name."
+INFO_NO_CHANGES = "No changes."
 WARNING_RENAME_WITH_EXISTING_TAG_NAME = """ New tag is an existing one. Manual
 action needed. Open the file and make sure you have a single 'new' action for
 this tag. Maybe ok: rename second one to 'add'. Make sure the total value
