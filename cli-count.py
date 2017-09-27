@@ -2,6 +2,7 @@ from datetime import datetime
 from datetime import date
 import logging
 import sys
+import os
 from cliconfig import FILE
 from cliconfig import DEFAULT_UNIT
 from cliconfig import DEFAULT_START_VALUE_NEW
@@ -26,20 +27,22 @@ from cliconfig import ERROR_WRONG_VALUE
 from cliconfig import ERROR_UNKNOWN_TAG_NAME
 from cliconfig import WARNING_RENAME_WITH_EXISTING_TAG_NAME
 
+EXECUTABLE_NAME = os.path.basename(__file__)
+
 
 def help():
     """ Quick help
     """
     print """
-cli-count new tag_name (start_value)       > default start_value is 0
-cli-count add tag_name (value) ("a story") > default value is 1
-cli-count total tag_name (start_date)      > date format: dd.mm.yyyy or today
-cli-count list (tag_name) (start_date)     > date format: dd.mm.yyyy or today
-cli-count edit old_line new_line           > use old_line as listed by list
-cli-count delete text (preview)            > use preview mode before delete
-cli-count tags (all)                       > show tags (with all info)
-cli-count rename tag_name new_tag_name     > rename given tag
-    """
+{0} new tag_name (start_value)       > default start_value is 0
+{0} add tag_name (value) ("a story") > default value is 1
+{0} total tag_name (start_date)      > date format: dd.mm.yyyy or today
+{0} list (tag_name) (start_date)     > date format: dd.mm.yyyy or today
+{0} edit old_line new_line           > use old_line as listed by list
+{0} delete text (preview)            > use preview mode before delete
+{0} tags (all)                       > show tags (with all info)
+{0} rename tag_name new_tag_name     > rename given tag
+""".format(EXECUTABLE_NAME)
 
 
 def is_valid(tag_name):
@@ -269,7 +272,7 @@ def tags(option=None):
                 if show_all is True:
                     print line
                 tags.append(parts[2])
-    print tags
+    print ", ".join(tags)
 
 
 def edit(old_line=None, new_line=None):
