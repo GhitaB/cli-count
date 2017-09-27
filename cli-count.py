@@ -272,7 +272,7 @@ def tags(option=None):
                 if show_all is True:
                     print line
                 tags.append(parts[2])
-    print tags
+    print ", ".join(tags)
 
 
 def edit(old_line=None, new_line=None):
