@@ -39,7 +39,7 @@ cli-count edit old_line new_line           > use old_line as listed by list
 cli-count delete text (preview)            > use preview mode before delete
 cli-count tags (all)                       > show tags (with all info)
 cli-count rename tag_name new_tag_name     > rename given tag
-    """
+"""
 
 
 def is_valid(tag_name):
