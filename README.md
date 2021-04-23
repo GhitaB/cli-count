@@ -109,3 +109,5 @@ INFO - TOTAL: 3.0
 ## 2. Useful?
 
 Not sure. I must try it some weeks. But it seems to be ready to be used in multiple ways as counter, log, journal, TODO list (why not?), etc. I am curious if you find new ways to use a product like this. :) Feel free to [contact me](http://ghitab.blogspot.ro/p/contact_15.html).
+
+[![Contact me on Codementor](https://www.codementor.io/m-badges/ghitab/find-me-on-cm-b.svg)](https://www.codementor.io/@ghitab?refer=badge)
